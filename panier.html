@@ -4,14 +4,13 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="css/styles.css" />
-        <title>Orinoco - Accueil</title>
+        <title>Orinoco - Produit</title>
         <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"> -->
-        <!-- <script type="text/javascript" src="server.js"></script> -->
 
         <!--commentaires-->
     </head>
-  <body>
-    <header class="container">
+  <body> 
+      <header class="container">
         <div class = "row justify-content-between">
             <button type="button" class="btn card">
                 <a href="index.html" class="stretched-link">
@@ -27,22 +26,22 @@
                 <span id="qty-cde"></span>
             </button>
         </div>
-    </header>
+      </header>
     <main class="container">
         <div class="row">
-            <h1>Les peluches faits main</h1>
+            <h1>Votre panier</h1>
         </div>
         <div class="row">
-            <div class="col-sm-12" id="product-result">
+            <div class="col-sm-12" id="product_tableau">
                 <!-- ici sera rajouter la liste des nounours en javascript -->
             </div>
         </div>
-
+        <button type="button" class="btn btn-primary" id="btn-valid">Valider votre commande</button>
+        <button type="button" class="btn btn-secondary" id="btn-test">Test btn</button>
     </main>
     
     
-    <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript" src="panier.js"></script>
     <script type="text/javascript" src="panier_Etat.js"></script>
-    <!-- <script type="text/javascript" src="server.js"></script> -->
   </body>
 </html>
