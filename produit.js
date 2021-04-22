@@ -53,16 +53,23 @@ function creationEnfant(valeur,element){
     txt_coloris.classList.add("col-3");
     bloc_info.appendChild(txt_coloris);
 
+
+
+
     // création de la liste des coloris possibles
-    let liste_coloris = document.createElement("ul");
-    liste_coloris.classList.add("col-4");
+    let liste_coloris = document.createElement("select");
+    liste_coloris.classList.add("col-4", "form-control");
     bloc_info.appendChild(liste_coloris);
+
+    let option = document.createElement("option");
+    option.setAttribute("selected","selected");
+    option.textContent="Choisissez";
+    liste_coloris.appendChild(option);
 
     // création de la liste des coloris possibles avec boucle pour chaque couleur
     for (let j = 0; j < valeur.colors.length; j++) {
-        let coloris = document.createElement("li");
+        let coloris = document.createElement("option");
         coloris.textContent=valeur.colors[j];
-        // coloris.classList.add("row");
         liste_coloris.appendChild(coloris);
     }   
 
