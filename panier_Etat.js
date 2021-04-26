@@ -15,13 +15,17 @@ if (bouton != null) {
     });
 }
 
-// bouton vide panier
+
+// Vider le panier avec message de confirmation
 let videPanier = document.getElementById("btn-vide");
 if (videPanier != null) {
     videPanier.addEventListener('click', function(event) {
-        localStorage.clear();
-        affichagePanier(0);
-        event.stopPropagation();        
+        if (confirm("Voulez-vous vraiment supprimer l'ensemble de votre panier?")) {
+            localStorage.clear();
+            affichagePanier(0);
+            document.location.reload();
+        }
+        event.stopPropagation();
     });
 }
 

@@ -111,3 +111,19 @@ request.open("GET", "http://localhost:3000/api/teddies" + "/" + queue_url);
 request.send();
 
 
+// bouton "commander" non clickable si une couleur n'est pas sélectionnée
+let btnCde = document.getElementById("btn-cde");
+let selection = document.getElementsByTagName("select");
+
+setTimeout(() => {
+    // Quand une nouvelle <option> est selectionnée
+    selection[0].addEventListener('change', function() {
+        if (selection[0].selectedIndex == 0) {
+            btnCde.disabled=true;
+        }
+        else {
+            btnCde.disabled=false;
+        }
+
+    });
+}, 100);
