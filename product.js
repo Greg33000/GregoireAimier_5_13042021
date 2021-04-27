@@ -7,44 +7,45 @@ window.onload = function loadPage () {
     request.onreadystatechange = function() {
         if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
             let response = JSON.parse(this.responseText);
-            // boucle sur chaque "item" récupéré et création de la structure html pour chaque élément
-            for (let i = 0; i < response.length; i++) {
-                createProductContainer(response[i]);
-            }
+            createProductContainer(response);
         }
     };
-    request.open("GET", "http://localhost:3000/api/teddies");
+
+    // Récupérer l'id présent dans l'url
+    let actualUrl = document.location.href; 
+    endOfUrl = actualUrl.substring (actualUrl.lastIndexOf( "?" )+1 );
+    // Lancement de la requete "get"
+    request.open("GET", "http://localhost:3000/api/teddies" + "/" + endOfUrl);
     request.send();
 };
-
 
 
 // ************************* EVENEMENTS *************************//
 // **************************************************************//
 
-// EVENEMENT - définir l'élément cliqué dans les sections créées => Utiliser une promise?
-var clickPage1 = document.getElementsByTagName("section");
-setTimeout(() => {
-    
-    for (let i = 0; i < clickPage1.length; i++) {
-        clickPage1[i].addEventListener('click', function(event) {
-            let click_id = clickPage1[i].getAttribute("id");
-            console.log(click_id);
-            event.stopPropagation();
-            
-            // rajout à l'url du fichier "product" l'id du produit choisi pour pouvoir l'afficher
-            window.location.assign("product.html?"+ click_id);
-        });
-    }
-}, 100);
+// EVENEMENT - bouton "commander" non clickable si une couleur n'est pas sélectionnée
+let btnOrdered = document.getElementById("btnOrder");
+let selection = document.getElementsByTagName("select");
 
+setTimeout(() => {
+    // Quand une nouvelle <option> est selectionnée
+    selection[0].addEventListener('change', function() {
+        if (selection[0].selectedIndex == 0) {
+            btnOrdered.disabled=true;
+        }
+        else {
+            btnOrdered.disabled=false;
+        }
+
+    });
+}, 100);
 
 // ************************** FONCTIONS *************************//
 // **************************************************************//
 
 // FONCTION - Création élément + ajout DOM
 
-let productBlock = document.getElementById("productBlock");
+let productBlock = document.getElementById("productSelection");
 
 function createProductContainer(product){ //product 
     
@@ -94,14 +95,20 @@ function createProductContainer(product){ //product
     colorText.classList.add("col-3");
     blockInfo.appendChild(colorText);
 
-    // création de la liste des coloris possibles
-    let blockColor = document.createElement("ul");
-    blockColor.classList.add("col-4");
+    // création de la liste des coloris possibles avec une selection
+    let blockColor = document.createElement("select");
+    blockColor.classList.add("col-4", "form-control");
     blockInfo.appendChild(blockColor);
+
+    // Création de la séléction par défaut à l'ouverture de la page
+    let option = document.createElement("option");
+    option.setAttribute("selected","selected");
+    option.textContent="Choisissez";
+    blockColor.appendChild(option);
 
     // boucle pour chaque couleur
     for (let j = 0; j < product.colors.length; j++) {
-        let colorList = document.createElement("li");
+        let colorList = document.createElement("option");
         colorList.textContent=product.colors[j];
         blockColor.appendChild(colorList);
     }   
@@ -113,3 +120,4 @@ function createProductContainer(product){ //product
     blockInfo.appendChild(price);
 
 }
+

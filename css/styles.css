@@ -9933,14 +9933,14 @@ h3 {
   height: auto;
 }
 
-.box_peluche--dim {
+.box__product {
   border: 2px solid blue;
   margin: 20px 0px;
   padding-top: 10px;
   padding-bottom: 10px;
   cursor: pointer;
 }
-.box_peluche--titre {
+.box__title {
   border: 1px dashed grey;
 }
 
@@ -9948,7 +9948,7 @@ h3 {
   border: 1px dashed red;
 }
 
-.formulaire {
+.formBlock {
   display: none;
 }
 
