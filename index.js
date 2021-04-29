@@ -1,115 +1,128 @@
+let clickProduct = document.getElementsByTagName("section");
+let productBlock = document.getElementById("productBlock");
+let maxProductPerPage = 10;
+
 // ******************** CHARGEMENT DE LA PAGE *******************//
 // **************************************************************//
 
-// CHARGEMENT - Lance la fonction qui affiche la quantité du panier (basket)
+// CHARGEMENT - Lancement de la récupération des produit afin de les afficher 
 window.onload = function loadPage () {
-    let request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-        if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-            let response = JSON.parse(this.responseText);
-            // boucle sur chaque "item" récupéré et création de la structure html pour chaque élément
-            for (let i = 0; i < response.length; i++) {
-                createProductContainer(response[i]);
-            }
+
+   // lancement de la requete (promesse) et si "ok", on créé le html
+    getAllItems().then((value) => {
+        let maxItemOfThisPage = 0;
+
+        // vérification qu'on ne dépasse pas le nombre de produit max défini par page et on créé les fiches articles
+        if (value.length > maxProductPerPage) {
+            maxItemOfThisPage = maxProductPerPage;
+        } else {
+            maxItemOfThisPage = value.length;
         }
-    };
-    request.open("GET", "http://localhost:3000/api/teddies");
-    request.send();
+        for (let i = 0; i < maxItemOfThisPage; i++) {
+            createProductContainer(value[i]);
+        }
+    });
 };
-
-
 
 // ************************* EVENEMENTS *************************//
 // **************************************************************//
 
-// EVENEMENT - définir l'élément cliqué dans les sections créées => Utiliser une promise?
-var clickPage1 = document.getElementsByTagName("section");
-setTimeout(() => {
-    
-    for (let i = 0; i < clickPage1.length; i++) {
-        clickPage1[i].addEventListener('click', function(event) {
-            let click_id = clickPage1[i].getAttribute("id");
-            console.log(click_id);
+// EVENEMENT - Au click sur un produit, on affiche la page du produit
+setTimeout(() => { // Set time out : attend que la page soit créée avant de vérifier le add Event listener    
+    for (let i = 0; i < clickProduct.length; i++) {
+        clickProduct[i].addEventListener('click', function(event) {
+            
+            // recherche de l'Id du produit cliqué
+            let productId = clickProduct[i].getAttribute("id");
             event.stopPropagation();
             
-            // rajout à l'url du fichier "product" l'id du produit choisi pour pouvoir l'afficher
-            window.location.assign("product.html?"+ click_id);
+            // ouverture de la page produit en y incluant l'id du produit cliqué (pour être récupérable lors du chargement de la page produit)
+            window.location.assign("product.html?"+ productId);
         });
     }
 }, 100);
 
 
+
 // ************************** FONCTIONS *************************//
 // **************************************************************//
 
-// FONCTION - Création élément + ajout DOM
 
-let productBlock = document.getElementById("productBlock");
+// FONCTION - récupération des produits (get) avec une promesse
+function getAllItems() {
+    return new Promise((resolve, reject) => { // peut aussi s'écrire si pas besoin du product id : const getItemWithId = new Promise((resolve, reject) => {
+        var request = new XMLHttpRequest();
+        request.open("GET", "http://localhost:3000/api/teddies");
+        request.onload = () => resolve(JSON.parse(request.responseText));
+        request.onerror = () => reject(request.statusText);
+        request.send();
+    });
+}
 
-function createProductContainer(product){ //product 
+
+// FONCTION - Création fiche produit + ajout DOM => les numéros correspondent à l'emplacement dans l'architecture à partir du bloc "section" (n°0)
+function createProductContainer(product){ 
     
-    // création de la section et rajout au DOM
+    // 0 -- création de la section "produit" qui créé et affiche les données produit dans le html (rajout au DOM). l'ID de la section = l'ID du produit
     let productContainer = document.createElement("section");
     productContainer.id = product._id;
     productContainer.classList.add("container","box__product");
     productBlock.appendChild(productContainer);
 
-    // création de l'élément titre
+    // 1 -- création de l'élément titre => le nom du produit
     let title = document.createElement("h2");
     title.textContent=product.name;
     title.classList.add("col","text-center","box__title");
     productContainer.appendChild(title);
 
-    // création de l'article
+    // 1 -- création d'un bloc pour toutes les autres informations ("article")
     let blockArticle = document.createElement("article");
     blockArticle.classList.add("row");
     productContainer.appendChild(blockArticle);
 
-    // création de l'élément image
+    // 2 -- création de l'élément image => image du produit = taille prédéfinie dans le css
     let image = document.createElement("img");
     image.classList.add("col","image--dim");
     image.setAttribute("src",product.imageUrl);
     blockArticle.appendChild(image);
 
-    // création du bloc test
+    // 2 -- création du bloc qui va contenir la désignation / les couleurs et le prix
     let blockText = document.createElement("div");
     blockText.classList.add("col");
     blockArticle.appendChild(blockText);
 
-    // création de la description pour le bloc test
+    // 3 -- création de la description du produit 
     let description = document.createElement("p");
     description.classList.add("row");
     description.textContent=product.description;
     blockText.appendChild(description);
 
-    // création du bloc des données supplémentaires
+    // 3 -- création du bloc des données supplémentaires (couleurs et coloris)
     let blockInfo = document.createElement("div");
     blockInfo.style.height = "60%";
     blockInfo.classList.add("row");
     blockText.appendChild(blockInfo);
 
-    // création de la liste des coloris possibles
+    // 4 -- création d'un paragraphe qui contient le mot "couleur"
     let colorText = document.createElement("p");
     colorText.textContent="Couleurs :";
     colorText.classList.add("col-3");
     blockInfo.appendChild(colorText);
 
-    // création de la liste des coloris possibles
+    // 4 -- création du bloc (liste) des couleurs
     let blockColor = document.createElement("ul");
     blockColor.classList.add("col-4");
     blockInfo.appendChild(blockColor);
 
-    // boucle pour chaque couleur
+    // 5 -- création d'une ligne (liste) qui boucle sur chaque couleur disponibles du produit
     for (let j = 0; j < product.colors.length; j++) {
         let colorList = document.createElement("li");
         colorList.textContent=product.colors[j];
         blockColor.appendChild(colorList);
     }   
-
-    // création du prix
+    // 4 -- création du prix
     let price = document.createElement("p");
     price.textContent=product.price / 100 + " €";
     price.classList.add("col","align-self-end","text-center","price");
     blockInfo.appendChild(price);
-
 }

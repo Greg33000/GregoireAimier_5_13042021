@@ -5,7 +5,7 @@ let buttonValid = document.getElementById("btnValid");
 let form = document.getElementById("formBlock");
 let myInput = document.getElementsByTagName("input");
 let buttonFinalize = document.getElementById("btnFinalize");
-
+let totalPrice = 0;
 
 
 // ******************** CHARGEMENT DE LA PAGE *******************//
@@ -15,7 +15,7 @@ let buttonFinalize = document.getElementById("btnFinalize");
 window.onload = function loadPage () {
 
     if (localStorage.getItem("basket") == null) {
-        WarningEmptyBasket();
+        warningEmptyBasket();
         blockVisible(false,buttonValid);
         blockVisible(false,buttonSupp);
         blockVisible(false,form);
@@ -42,31 +42,10 @@ buttonValid.addEventListener('click', function(event) {
 // EVENEMENT - Affichage du bouton de finalisation de la commande quand tous les champs sont valides 
 // email pour "email" et champs non vides quand "texte"
 for (let i = 0; i < myInput.length; i++) { 
-    myInput[i].addEventListener('input', function(event) {
-        let compt = 0;
-        for (let j = 0; j < myInput.length; j++) { 
-            if (myInput[j].getAttribute("type") == "email") {
-                validEmail = false;
-                for (let k = 1 ; k < myInput[j].value.length ; k++){
-                    if (myInput[j].value.charAt(k) == "@") {
-                        if (k < (myInput[j].value.length-4)) {
-                            for (let l = k ; l < (myInput[j].value.length-2) ; l++){
-                                if (myInput[j].value.charAt(l) == ".") {
-                                    validEmail = true;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (validEmail == true) {
-                    compt += 1;
-                }
-            }
-            else if (myInput[j].value != "")  {
-                compt += 1;
-            }
-        }
-        if (compt == 5) {
+    myInput[i].addEventListener('input', function(event) { 
+        const numberOfInputComplete = inputVerification();
+        // si le compteur = 5 alors c'est que tous les inputs sont remplis correctement : le boutton devient clickable
+        if (numberOfInputComplete == 5) {
             buttonFinalize.disabled = false;
         }
         else {
@@ -76,31 +55,61 @@ for (let i = 0; i < myInput.length; i++) {
     });
 }
 
+// EVENEMENT - Envoi du formulaire si click (avec vérification : appel fonction avec fetch) 
+document.getElementById("form").addEventListener("submit", send);
+
+
 
 // ************************** FONCTIONS *************************//
 // **************************************************************//
 
 // FONCTION - affichage du panier 
 function seeTheStorageInTable(){
-    
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-        if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-            var response = JSON.parse(this.responseText);
-            createHtmlItems(response);
-            // console.log(response);
+    createHtmlTableHeader();
+    createTableBody();
+    setTimeout(() => { // nécessaire pour avoir le total "correct" sinon il retourne le résultat : 0;
+        createHtmlTableTotal(totalPrice);
+    }, 100);
+}
+
+
+// FONCTION - récupération du produit (get) avec une promesse
+function getItemWithId(productId) {
+    return new Promise((resolve, reject) => { // peut aussi s'écrire si pas besoin du product id : const getItemWithId = new Promise((resolve, reject) => {
+        var request = new XMLHttpRequest();
+        request.open("GET", "http://localhost:3000/api/teddies" + "/" + productId);
+        request.onload = () => resolve(JSON.parse(request.responseText));
+        request.onerror = () => reject(request.statusText);
+        request.send();
+    });
+}
+
+// FONCTION - Vérification de tous les champs du formulaire
+function inputVerification(){
+    let counter = 0;
+    // boucle pour vérifier que tous les inputs sont remplis
+    for (let j = 0; j < myInput.length; j++) { 
+
+        // si l'input est l'email, on va rechercher les caractères "@", le "." apres le arobase et on ne doit pas avoir d'espace (" ").
+        if (myInput[j].getAttribute("type") == "email") { 
+            if (myInput[j].value.indexOf("@") >= 1 & myInput[j].value.indexOf(".",myInput[j].value.indexOf("@")) != -1 & myInput[j].value.indexOf(" ") == -1) {
+                counter += 1;
+            }
         }
-    };
-    request.open("GET", "http://localhost:3000/api/teddies");
-    request.send();
-};
+        else if (myInput[j].value != "")  {
+            counter += 1;
+        }
+    }
+    return counter;
+}
+
 
 // FONCTION - affichage du panier vide
-function WarningEmptyBasket(){
+function warningEmptyBasket(){
     productTable.textContent="Votre panier est vide";
 }
 
-// FONCTION - affichage de l'élément sélectionné
+// FONCTION - affichage de l'élément sélectionné (bouton / formulaire)
 function blockVisible(booleanStatus,eltSelect){
     if (booleanStatus == true & eltSelect === form){
         eltSelect.style.display = "block";
@@ -110,145 +119,153 @@ function blockVisible(booleanStatus,eltSelect){
     }
 }
 
+// FONCTION - Utilisation d'un fetch pour envoyer la requete du "post" (et récupération de l'orderId)
+function send(e) {
+    e.preventDefault();
 
-// FONCTION - affichage des éléments dans un tableau
-function createHtmlItems(productItem){
-    
-    // création de l'item "carte"
-    let carte = document.createElement("table");
-    carte.classList.add("table","table-striped","table-bordered");
-    carte.innerHTML = "<tr><th>Id</th><th>Nom</th><th>Prix</th></tr>";
-    productTable.appendChild(carte);
-
-    // création des éléments présents dans le local storage
-
-    let countBasket = 0;
-    for (let i = 0; i < localStorage.getItem("basket").length; i++) {
-        for (let j = 0; j < productItem.length; j++) {
-            if (JSON.parse(localStorage.getItem("basket"))[i] == productItem[j]._id) {
-                let rowTable = document.createElement("tr");
-                carte.appendChild(rowTable);
-
-                // colonne ID
-                let productId = document.createElement("td");
-                productId.textContent=productItem[j]._id;
-                rowTable.appendChild(productId);
-
-                // colonne Name
-                let productName = document.createElement("td");
-                productName.textContent=productItem[j].name;
-                rowTable.appendChild(productName);
-
-                // colonne Prix
-                let productPrice = document.createElement("td");
-                productPrice.textContent=productItem[j].price  / 100 + " €";
-                rowTable.appendChild(productPrice);
-
-                countBasket += (productItem[j].price  / 100);
+    // vérification des données qui vont être envoyées au serveur : formulaire + panier non vide) 
+    if (inputVerification()==5 & localStorage.getItem("basket") != null) {
+        let jsonBody = { 
+            "contact": {
+                "firstName" : document.getElementById("firstName").value,
+                "lastName" : document.getElementById("lastName").value,
+                "email" : document.getElementById("email").value,
+                "address" : document.getElementById("address").value,
+                "city" : document.getElementById("city").value
+            },
+            "products": JSON.parse(localStorage.getItem("basket"))
+        };
+        fetch("http://localhost:3000/api/teddies/order", {
+          method: "POST",
+          headers: {
+            'Accept': 'application/json', 
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(jsonBody)
+        })
+        .then(function(res) {
+          if (res.ok) {
+            return res.json();
+          }
+        })
+        .then(function(value) {
+            
+            // calcul du totalPrice revenu avec le "post"
+            let orderPrice = 0;
+            for (let i = 0; i < value.products.length; i++) {
+                orderPrice += value.products[i].price / 100;
             }
-        }
-        
+            // rajout à l'url de la page "order.html" la référence de la commande (revenue du "post") et du prix total calculé (totalPrice)
+            window.location.assign("order.html?"+ "order=" + value.orderId + "&price=" + orderPrice);
+        });
     }
+    // si les données transmises ne sont pas bonnes, alors on affiche un message d'erreur et on raffraichit la page (si erreur du localstorage)
+    else {
+        alert("Une erreur est survenue, merci de bien vouloir essayer de nouveau");
+        location.reload();
+    }
+  }
+  
 
-    // création du tableau "total commande"
 
-    carte = document.createElement("table");
-    carte.classList.add("table","table-striped","table-bordered","col-6","text-center","ml-auto","mr-auto");
-    productTable.appendChild(carte);
+// FONCTION - Création du corps du tableau (avec tous les éléments du panier) 
+function createTableBody() {
+    
+    let itemId = JSON.parse(localStorage.getItem("basket"));
+    
+    for (let i = 0; i < itemId.length; i++) {
+        getItemWithId(itemId[i]).then((value) => {
+            createHtmlItems(value);
+            totalPrice += value.price / 100; 
+        });
+    }
+    
+}
 
-    // Total + prix
+// FONCTION - création de l'item "carte" et de l'entête du tableau
+function createHtmlTableHeader(){
+    let array = document.createElement("table");
+    array.classList.add("table","table-striped","table-bordered");
+    array.innerHTML = "<thead><tr><th>Id</th><th>Nom</th><th>Prix</th></tr></thead><tbody></tbody>";
+    productTable.appendChild(array);
+    let headOfTable = document.getElementsByTagName("thead");
+    headOfTable[0].classList.add("bg-secondary");
+}
+
+// FONCTION - Création des éléments du storage => les numéros correspondent à l'emplacement dans l'architecture à partir du bloc "tbody" 
+function createHtmlItems(productItem){
+    let array = document.getElementsByTagName("tbody"); // c'est le 0
+    
+    // 1 -- Création d'une ligne du tableau
+    let rowTable = document.createElement("tr");
+    array[0].appendChild(rowTable);
+
+    // 2 -- colonne ID
+    let productId = document.createElement("td");
+    productId.textContent=productItem._id;
+    rowTable.appendChild(productId);
+
+    // 2 -- colonne Name
+    let productName = document.createElement("td");
+    productName.textContent=productItem.name;
+    rowTable.appendChild(productName);
+
+    // 2 -- colonne Prix
+    let productPrice = document.createElement("td");
+    productPrice.textContent=productItem.price  / 100 + " €";
+    rowTable.appendChild(productPrice);
+    
+    // // 2 -- test de corbeille
+    // let productTrash = document.createElement("i");
+    // productTrash.classList.add("bi","bi-trash");
+    // rowTable.appendChild(productTrash);
+}
+
+// FONCTION - création du tableau "total commande"
+function createHtmlTableTotal(price){
+
+    // 0 -- création de la table 
+    let array = document.createElement("table");
+    array.classList.add("table","table-striped","table-bordered","col-6","text-center","ml-auto","mr-auto");
+    productTable.appendChild(array);
+
+    // 1 -- création du corp de la table
+    let bodyOfArray = document.createElement("tbody");
+    array.appendChild(bodyOfArray);
+
+    // 2 -- total + prix
     let rowTable = document.createElement("tr");
     rowTable.innerHTML = "<th>Total</th>";
-    carte.appendChild(rowTable);
+    bodyOfArray.appendChild(rowTable);
 
     let total = document.createElement("td");
-    total.textContent= countBasket + " €";
+    total.textContent= price + " €";
     rowTable.appendChild(total);
 
-    // TVA + prix
+    // 2 -- TVA + prix
     rowTable = document.createElement("tr");
     rowTable.innerHTML = "<th>dont TVA à 20%</th>";
-    carte.appendChild(rowTable);
+    bodyOfArray.appendChild(rowTable);
 
     total = document.createElement("td");
-    total.textContent= Math.trunc(countBasket * 0.2) + " €";
+    total.textContent= Math.trunc(price * 0.2) + " €";
     rowTable.appendChild(total);
 
-    // coût de livraison + prix
+    // 2 -- coût de livraison + prix
     rowTable = document.createElement("tr");
     rowTable.innerHTML = "<th>Coût de livraison</th>";
-    carte.appendChild(rowTable);
+    bodyOfArray.appendChild(rowTable);
 
     total = document.createElement("td");
     total.textContent= "0 €";
     rowTable.appendChild(total);
 
-    // Total commande + prix
+    // 2 -- Total commande + prix
     rowTable = document.createElement("tr");
     rowTable.innerHTML = "<th>Total de la commande</th>";
-    carte.appendChild(rowTable);
+    bodyOfArray.appendChild(rowTable);
 
     total = document.createElement("td");
-    total.textContent= countBasket + " €";
+    total.textContent= price + " €";
     rowTable.appendChild(total);
 }
-
-
-
-// envoi du formulaire
-function validationFormulaire(){
-    let jsonBody = {
-        "contact": {
-            "firstName" : document.getElementById("firstName").value,
-            "lastName" : document.getElementById("lastName").value,
-            "email" : document.getElementById("email").value,
-            "address" : document.getElementById("address").value,
-            "city" : document.getElementById("city").value
-        },
-        "products": JSON.parse(localStorage.getItem("basket"))
-    };
-    console.log(JSON.stringify(jsonBody));
-    
-    let requete = new XMLHttpRequest();
-
-    requete.open("POST", "http://localhost:3000/api/teddies/order");
-    requete.setRequestHeader("Content-Type","application/json");
-    requete.send(JSON.stringify(jsonBody));
-    alert(JSON.stringify(jsonBody));
-    alert(JSON.parse(responseText));
-    alert(response.json().postData.text);
-};
-
-// Action lors du click du bouton du formulaire
-btnFinalize.addEventListener('click', function(event) {
-    validationFormulaire();
-    event.stopPropagation();
-    event.preventDefault();
-});
-
-// function send(e) {
-//     e.preventDefault();
-//     fetch("http://localhost:3000/api/teddies", {
-//       method: "POST",
-//       headers: {
-//         'Accept': 'application/json', 
-//         'Content-Type': 'application/json'
-//       },
-//       body: JSON.stringify({firstName: document.getElementById("firstName").value})
-//     })
-//     .then(function(res) {
-//       if (res.ok) {
-//         return res.json();
-//       }
-//     })
-//     .then(function(value) {
-//         // document
-//         //   .getElementById("result")
-//         //   .innerText = value.postData.text;
-//         console.log(value.postData.text);
-//     });
-//   }
-  
-//  let formulaire=document.getElementsByTagName("form");
-//  formulaire[0].addEventListener("submit", send);
-  

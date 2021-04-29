@@ -1,22 +1,22 @@
+let btnOrdered = document.getElementById("btnOrder");
+let selection = document.getElementsByTagName("select");
+let productBlock = document.getElementById("productSelection");
+
+
 // ******************** CHARGEMENT DE LA PAGE *******************//
 // **************************************************************//
 
-// CHARGEMENT - Lance la fonction qui affiche la quantité du panier (basket)
+// CHARGEMENT - Récupère l'id transmis dans l'url et lance la récupération du produit + l'affichage sur la page
 window.onload = function loadPage () {
-    let request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-        if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-            let response = JSON.parse(this.responseText);
-            createProductContainer(response);
-        }
-    };
 
-    // Récupérer l'id présent dans l'url
-    let actualUrl = document.location.href; 
-    endOfUrl = actualUrl.substring (actualUrl.lastIndexOf( "?" )+1 );
-    // Lancement de la requete "get"
-    request.open("GET", "http://localhost:3000/api/teddies" + "/" + endOfUrl);
-    request.send();
+     // Récupérer l'id présent dans l'url
+     let actualUrl = document.location.href; 
+     endOfUrl = actualUrl.substring (actualUrl.lastIndexOf( "?" )+1 );
+
+    // lancement de la requete (promesse) et si "ok", on créé le html
+    getItemWithId(endOfUrl).then((value) => {
+        createProductContainer(value);
+    });
 };
 
 
@@ -24,11 +24,8 @@ window.onload = function loadPage () {
 // **************************************************************//
 
 // EVENEMENT - bouton "commander" non clickable si une couleur n'est pas sélectionnée
-let btnOrdered = document.getElementById("btnOrder");
-let selection = document.getElementsByTagName("select");
-
-setTimeout(() => {
-    // Quand une nouvelle <option> est selectionnée
+setTimeout(() => { // on décale dans le temps le addEventListener car les éléments ne sont pas encore créé.
+    // Quand une nouvelle <option> est selectionnée on rend le bouton "commander" disponible
     selection[0].addEventListener('change', function() {
         if (selection[0].selectedIndex == 0) {
             btnOrdered.disabled=true;
@@ -36,84 +33,94 @@ setTimeout(() => {
         else {
             btnOrdered.disabled=false;
         }
-
     });
 }, 100);
+
+
 
 // ************************** FONCTIONS *************************//
 // **************************************************************//
 
-// FONCTION - Création élément + ajout DOM
+// FONCTION - récupération du produit (get) avec une promesse
+function getItemWithId(productId) {
+    return new Promise((resolve, reject) => { // peut aussi s'écrire si pas besoin du product id : const getItemWithId = new Promise((resolve, reject) => {
+        var request = new XMLHttpRequest();
+        request.open("GET", "http://localhost:3000/api/teddies" + "/" + productId);
+        request.onload = () => resolve(JSON.parse(request.responseText));
+        request.onerror = () => reject(request.statusText);
+        request.send();
+    });
+}
 
-let productBlock = document.getElementById("productSelection");
 
-function createProductContainer(product){ //product 
+// FONCTION - Création fiche produit + ajout DOM => les numéros correspondent à l'emplacement dans l'architecture à partir du bloc "section" (n°0)
+function createProductContainer(product){ 
     
-    // création de la section et rajout au DOM
+    // 0 -- création de la section "produit" qui créé et affiche les données produit dans le html (rajout au DOM). l'ID de la section = l'ID du produit
     let productContainer = document.createElement("section");
     productContainer.id = product._id;
     productContainer.classList.add("container","box__product");
     productBlock.appendChild(productContainer);
 
-    // création de l'élément titre
+    // 1 -- création de l'élément titre => le nom du produit
     let title = document.createElement("h2");
     title.textContent=product.name;
     title.classList.add("col","text-center","box__title");
     productContainer.appendChild(title);
 
-    // création de l'article
+    // 1 -- création d'un bloc pour toutes les autres informations ("article")
     let blockArticle = document.createElement("article");
     blockArticle.classList.add("row");
     productContainer.appendChild(blockArticle);
 
-    // création de l'élément image
+    // 2 -- création de l'élément image => image du produit = taille prédéfinie dans le css
     let image = document.createElement("img");
     image.classList.add("col","image--dim");
     image.setAttribute("src",product.imageUrl);
     blockArticle.appendChild(image);
 
-    // création du bloc test
+    // 2 -- création du bloc qui va contenir la désignation / les couleurs et le prix
     let blockText = document.createElement("div");
     blockText.classList.add("col");
     blockArticle.appendChild(blockText);
 
-    // création de la description pour le bloc test
+    // 3 -- création de la description du produit 
     let description = document.createElement("p");
     description.classList.add("row");
     description.textContent=product.description;
     blockText.appendChild(description);
 
-    // création du bloc des données supplémentaires
+    // 3 -- création du bloc des données supplémentaires (couleurs et coloris)
     let blockInfo = document.createElement("div");
     blockInfo.style.height = "60%";
     blockInfo.classList.add("row");
     blockText.appendChild(blockInfo);
 
-    // création de la liste des coloris possibles
+    // 4 -- création d'un paragraphe qui contient le mot "couleur"
     let colorText = document.createElement("p");
     colorText.textContent="Couleurs :";
     colorText.classList.add("col-3");
     blockInfo.appendChild(colorText);
 
-    // création de la liste des coloris possibles avec une selection
+    // 4 -- création du bloc (selection) des couleurs
     let blockColor = document.createElement("select");
     blockColor.classList.add("col-4", "form-control");
     blockInfo.appendChild(blockColor);
 
-    // Création de la séléction par défaut à l'ouverture de la page
+    // 5 -- création de la première ligne (option) selectionnée par défaut => qui demande à choisire une couleur
     let option = document.createElement("option");
     option.setAttribute("selected","selected");
     option.textContent="Choisissez";
     blockColor.appendChild(option);
 
-    // boucle pour chaque couleur
+    // 5 -- création d'une ligne (option) qui boucle sur chaque couleur disponibles du produit
     for (let j = 0; j < product.colors.length; j++) {
         let colorList = document.createElement("option");
         colorList.textContent=product.colors[j];
         blockColor.appendChild(colorList);
     }   
 
-    // création du prix
+    // 4 -- création du prix
     let price = document.createElement("p");
     price.textContent=product.price / 100 + " €";
     price.classList.add("col","align-self-end","text-center","price");

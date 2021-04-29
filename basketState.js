@@ -1,18 +1,18 @@
+let btnOrder = document.getElementById("btnOrder");
+let basketSuppression = document.getElementById("btnSupp");
+let clickBasket = document.getElementById("btnBasket");
+
 // ******************** CHARGEMENT DE LA PAGE *******************//
 // **************************************************************//
 
-// CHARGEMENT - Lance la fonction qui affiche la quantité du panier (basket)
-// window.onload = function loadPage () {
-    seeQtyInBasket();
-// };
-
+// Lance la fonction qui affiche la quantité du panier (basket)
+seeQtyInBasket();
 
 
 // ************************* EVENEMENTS *************************//
 // **************************************************************//
 
 // EVENEMENT - Click sur le bouton "Ajouter au panier"
-let btnOrder = document.getElementById("btnOrder");
 if (btnOrder != null) {
     btnOrder.addEventListener('click', function(event) {
         let containerSelection= document.getElementsByTagName("section");
@@ -23,20 +23,18 @@ if (btnOrder != null) {
 }
 
 // EVENEMENT - Click sur le bouton "Vider le panier"
-let basketSuppression = document.getElementById("btnSupp");
 if (basketSuppression != null) {
     basketSuppression.addEventListener('click', function(event) {
         if (confirm("Voulez-vous vraiment supprimer l'ensemble de votre panier?")) { // message de confirmation de la suppression du panier
             localStorage.clear();
-            seeQtyInBasket();
-            // document.location.reload();
+            // seeQtyInBasket();
+            location.reload();
         }
         event.stopPropagation();
     });
 }
 
 // EVENEMENT - Click sur l'icone panier (qui accède à la page "basket.html")
-let clickBasket = document.getElementById("btnBasket");
 clickBasket.addEventListener('click', function(event) {
     window.location.assign("basket.html");
     event.stopPropagation();
