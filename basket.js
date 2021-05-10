@@ -215,10 +215,6 @@ function createHtmlItems(productItem){
     productPrice.textContent=productItem.price  / 100 + " €";
     rowTable.appendChild(productPrice);
     
-    // // 2 -- test de corbeille
-    // let productTrash = document.createElement("i");
-    // productTrash.classList.add("bi","bi-trash");
-    // rowTable.appendChild(productTrash);
 }
 
 // FONCTION - création du tableau "total commande"
