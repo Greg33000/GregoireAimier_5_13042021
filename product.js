@@ -68,8 +68,8 @@ function createProductContainer(product){
     title.classList.add("col","text-center","box__title");
     productContainer.appendChild(title);
 
-    // 1 -- création d'un bloc pour toutes les autres informations ("article")
-    let blockArticle = document.createElement("article");
+    // 1 -- création d'un bloc pour toutes les autres informations
+    let blockArticle = document.createElement("div");
     blockArticle.classList.add("row");
     productContainer.appendChild(blockArticle);
 
@@ -77,6 +77,7 @@ function createProductContainer(product){
     let image = document.createElement("img");
     image.classList.add("col","image--dim");
     image.setAttribute("src",product.imageUrl);
+    image.setAttribute("alt","image de l'ours en peluche : " & product.name);
     blockArticle.appendChild(image);
 
     // 2 -- création du bloc qui va contenir la désignation / les couleurs et le prix
@@ -86,25 +87,25 @@ function createProductContainer(product){
 
     // 3 -- création de la description du produit 
     let description = document.createElement("p");
-    description.classList.add("row");
+    // description.classList.add("row");
     description.textContent=product.description;
     blockText.appendChild(description);
 
     // 3 -- création du bloc des données supplémentaires (couleurs et coloris)
     let blockInfo = document.createElement("div");
-    blockInfo.style.height = "60%";
-    blockInfo.classList.add("row");
+    // blockInfo.style.height = "60%";
+    blockInfo.classList.add("row","justify-content-between");
     blockText.appendChild(blockInfo);
 
     // 4 -- création d'un paragraphe qui contient le mot "couleur"
     let colorText = document.createElement("p");
-    colorText.textContent="Couleurs :";
-    colorText.classList.add("col-3");
+    colorText.textContent="Couleurs";
+    colorText.classList.add("col");
     blockInfo.appendChild(colorText);
 
     // 4 -- création du bloc (selection) des couleurs
     let blockColor = document.createElement("select");
-    blockColor.classList.add("col-4", "form-control");
+    blockColor.classList.add("col", "form-control","mr-3");
     blockInfo.appendChild(blockColor);
 
     // 5 -- création de la première ligne (option) selectionnée par défaut => qui demande à choisire une couleur
@@ -124,7 +125,7 @@ function createProductContainer(product){
     let price = document.createElement("p");
     price.textContent=product.price / 100 + " €";
     price.classList.add("col","align-self-end","text-center","price");
-    blockInfo.appendChild(price);
+    blockText.appendChild(price);
 
 }
 

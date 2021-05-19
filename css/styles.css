@@ -9930,7 +9930,13 @@ h3 {
 }
 .image--dim {
   max-width: 270px;
-  height: auto;
+  height: 200px;
+}
+@media screen and (max-width: 740px) {
+  .image--dim {
+    max-width: 178.2px;
+    height: 132px;
+  }
 }
 
 .box__product {

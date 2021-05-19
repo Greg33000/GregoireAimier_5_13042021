@@ -1,8 +1,46 @@
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
 
+
+// Variables pour les médias : map
+$breakpoints:(
+    large-mobile:570px,
+    tablet:740px,
+    desktop:1024px,
+    large-desktop:1240px
+);
+
+// Mixin intégration des médias 
+@mixin large-mobile{
+    @media screen and (max-width:map-get($breakpoints,large-mobile)){
+        @content;
+    }
+}
+@mixin tablet{
+    @media screen and (max-width:map-get($breakpoints,tablet)){
+        @content;
+    }
+}
+@mixin desktop{
+    @media screen and (max-width:map-get($breakpoints,desktop)){
+        @content;
+    }
+}
+@mixin large-desktop{
+    @media screen and (max-width:map-get($breakpoints,large-desktop)){
+        @content;
+    }
+}
+
+$widthImageDesktop:270px;
+$heightImageDesktop:200px;
+
 .image--dim {
-    max-width: 270px;
-    height: auto;
+    max-width: $widthImageDesktop;
+    height: $heightImageDesktop;
+    @include tablet{
+        max-width:$widthImageDesktop*0.66;
+        height:$heightImageDesktop*0.66;
+    }
 }
 
 .box{

@@ -5,42 +5,39 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="css/styles.css" />
         <title>Orinoco - Produit</title>
-        <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"> -->
-
-        <!--commentaires-->
     </head>
-  <body> 
-      <header class="container">
-        <div class = "row justify-content-between">
-            <button type="button" class="btn card">
-                <a href="index.html" class="stretched-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-square" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm11.5 5.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/>
+    <body> 
+        <header class="container">
+            <div class = "row justify-content-between">
+                <div class="btn card">
+                    <a href="index.html" class="stretched-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-square" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm11.5 5.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/>
+                        </svg>
+                    </a>
+                </div>
+                <img class="col-2" src="img/logo_Orinoco.jpg" alt="logo Orinoco">
+                <button type="button" class="btn" id="btnBasket">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-basket3" viewBox="0 0 16 16">
+                        <path d="M5.757 1.071a.5.5 0 0 1 .172.686L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15.5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H.5a.5.5 0 0 1-.5-.5v-1A.5.5 0 0 1 .5 6h1.717L5.07 1.243a.5.5 0 0 1 .686-.172zM3.394 15l-1.48-6h-.97l1.525 6.426a.75.75 0 0 0 .729.574h9.606a.75.75 0 0 0 .73-.574L15.056 9h-.972l-1.479 6h-9.21z"/>
                     </svg>
-                </a>
-            </button>
-            <button type="button" class="btn" id="btnBasket">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-basket3" viewBox="0 0 16 16">
-                    <path d="M5.757 1.071a.5.5 0 0 1 .172.686L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15.5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H.5a.5.5 0 0 1-.5-.5v-1A.5.5 0 0 1 .5 6h1.717L5.07 1.243a.5.5 0 0 1 .686-.172zM3.394 15l-1.48-6h-.97l1.525 6.426a.75.75 0 0 0 .729.574h9.606a.75.75 0 0 0 .73-.574L15.056 9h-.972l-1.479 6h-9.21z"/>
-                </svg>
-                <span id="poQty"></span>
-            </button>
-        </div>
-      </header>
-    <main class="container">
-        <div class="row">
-            <h1>Le produit sélectionné</h1>
-        </div>
-        <div class="row">
-            <div class="col-sm-12" id="productSelection">
-                <!-- ici sera rajouter la liste des nounours en javascript -->
+                    <span id="poQty"></span>
+                </button>
             </div>
-        </div>
-        <button type="button" class="btn btn-primary" id="btnOrder" disabled>Commander</button>
-    </main>
+        </header>
+        <main class="container">
+            <div class="row, text-center">
+                <h1>Le produit sélectionné</h1>
+            </div>
+            <div class="row">
+                <div class="col-sm-12" id="productSelection">
+                    <!-- ici sera rajouté le javascript -->
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary" id="btnOrder" disabled>Commander</button>
+        </main>
     
-    
-    <script type="text/javascript" src="basketState.js"></script>
-    <script type="text/javascript" src="product.js"></script>
-  </body>
+        <script  src="basketState.js"></script>
+        <script  src="product.js"></script>
+    </body>
 </html>
